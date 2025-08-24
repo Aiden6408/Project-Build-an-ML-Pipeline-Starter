@@ -12,19 +12,13 @@ etl:
 data_check:
   kl_threshold: 0.2
 modeling:
-  # Fraction of data to use for test (the remaining will be used for train and validation)
-  test_size: 0.2
-  # Fraction of remaining data to use for validation
-  val_size: 0.2
-  # Fix this for reproducibility, change to have new splits
   random_seed: 42
-  # Column to use for stratification (use "none" for no stratification)
-  stratify_by: "neighbourhood_group"
-  # Maximum number of features to consider for the TFIDF applied to the title of the
-  # insertion (the column called "name")
+  stratify_by: neighbourhood_group
+  val_size: 0.2
   max_tfidf_features: 5
-  # NOTE: you can put here any parameter that is accepted by the constructor of
-  # RandomForestRegressor. This is a subsample, but more could be added:
+  random_forest:
+    n_estimators: 200
+    max_depth: 50
   random_forest:
     n_estimators: 100
     max_depth: 15
