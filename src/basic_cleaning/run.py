@@ -4,6 +4,7 @@ Download from W&B the raw dataset and apply some basic data cleaning, exporting 
 """
 import argparse
 import logging
+import os
 import wandb
 import pandas as pd
 
@@ -14,35 +15,43 @@ logger = logging.getLogger()
 # DO NOT MODIFY
 def go(args):
 
-    run = wandb.init(job_type="basic_cleaning")
-    run.config.update(args)
+    run = wandb.init(
+        project=os.getenv("WANDB_PROJECT", "nyc_airbnb"),
+        entity=os.getenv("WANDB_ENTITY"),
+        job_type="basic_cleaning",
+        group="cleaning",
+        save_code=True,
+    )
+    run.config.update(vars(args))
 
     # Download input artifact. This will also log that this script is using this
-    
-    run = wandb.init(project="nyc_airbnb", group="cleaning", save_code=True)
     artifact_local_path = run.use_artifact(args.input_artifact).file()
     df = pd.read_csv(artifact_local_path)
+
     # Drop outliers
     min_price = args.min_price
     max_price = args.max_price
     idx = df['price'].between(min_price, max_price)
     df = df[idx].copy()
+
     # Convert last_review to datetime
     df['last_review'] = pd.to_datetime(df['last_review'])
 
+    # Keep only valid geo bounds
     idx = df['longitude'].between(-74.25, -73.50) & df['latitude'].between(40.5, 41.2)
     df = df[idx].copy()
+
     # Save the cleaned file
-    df.to_csv('clean_sample.csv',index=False)
+    df.to_csv('clean_sample.csv', index=False)
 
     # log the new data.
     artifact = wandb.Artifact(
-     args.output_artifact,
-     type=args.output_type,
-     description=args.output_description,
- )
+        args.output_artifact,
+        type=args.output_type,
+        description=args.output_description,
+    )
     artifact.add_file("clean_sample.csv")
-    run.log_artifact(artifact)
+    run.log_artifact(artifact, aliases=["latest", "reference"])
 
 
 # TODO: In the code below, fill in the data type for each argumemt. The data type should be str, float or int. 

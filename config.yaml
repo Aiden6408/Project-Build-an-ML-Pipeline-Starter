@@ -14,6 +14,7 @@ data_check:
 modeling:
   random_seed: 42
   stratify_by: neighbourhood_group
+  test_size: 0.2          # <-- add this if missing
   val_size: 0.2
   max_tfidf_features: 5
   random_forest:
@@ -21,9 +22,7 @@ modeling:
     max_depth: 50
     min_samples_split: 4
     min_samples_leaf: 3
-    # Here -1 means all available cores
     n_jobs: -1
     criterion: squared_error
     max_features: 0.5
-    # DO not change the following
     oob_score: true
