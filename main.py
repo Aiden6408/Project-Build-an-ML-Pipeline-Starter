@@ -52,11 +52,11 @@ def go(config: DictConfig):
                 mlflow.run(
                     uri=os.path.join(get_original_cwd(), "src", "basic_cleaning"),
                     entry_point="main",
-                    env_manager="local",
+                    env_manager="conda",
                     parameters={
                         "input_artifact": "sample.csv:latest",
                         "output_artifact": "clean_sample.csv",
-                        "output_type": "clean_data",
+                        "output_type": "clean_sample",
                         "output_description": "Data after basic cleaning",
                         "min_price": config["etl"]["min_price"],
                         "max_price": config["etl"]["max_price"],
@@ -69,7 +69,7 @@ def go(config: DictConfig):
                 mlflow.run(
                     uri=os.path.join(get_original_cwd(), "src", "data_check"),
                     entry_point="main",
-                    env_manager="local",
+                    env_manager="conda",
                     parameters={
                         "csv": "clean_sample.csv:latest",
                         "ref": "clean_sample.csv:reference",
@@ -108,7 +108,7 @@ def go(config: DictConfig):
                 mlflow.run(
                     uri=os.path.join(get_original_cwd(), "src", "train_random_forest"),
                     entry_point="main",
-                    env_manager="local",
+                    env_manager="conda",
                     parameters={
                         "trainval_artifact": "trainval_data.csv:latest",
                         "val_size": str(config["modeling"]["val_size"]),
